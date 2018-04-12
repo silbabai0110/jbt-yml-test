@@ -1,0 +1,146 @@
+buildscript {
+    ext {
+        springBootVersion = '1.4.2.RELEASE'
+        restAssuredVersion = '2.4.1'
+        artifactId = 'jbt-yml-test'
+    }
+    repositories {
+        mavenLocal()
+        maven {
+            url 'http://artifactory.io.comcast.net/plugins-release'
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+    dependencies {
+    	classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
+        //classpath group: 'com.comcast.esp.gradle', name: 'exec-wait', version: '0.0.+'
+    }
+}
+
+apply plugin: "com.jfrog.artifactory"
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+
+eclipse {
+    classpath {
+        downloadSources = true
+    }
+}
+configurations {
+    deployerJars
+}
+
+// version should be increased when new changes are made to this class
+// version 1.0.6 - addeded delay between scripts
+// version 1.0.7 - added functionality for calling different URL
+// version 1.0.8 -- fixed issue with assertion logic at root level
+// version 1.0.19 - implemented DELETE httpMethod.
+// version 1.0.20 - implemented security.
+// version 1.0.21 - implemented Delete method with pay load.
+// version 1.0.22 - implemented security feature & not contains assertion.
+// version 1.0.23 - implemented Http Response code assertor
+// version 1.0.25 - implemented checkHealth assertion between xml & json
+// version 1.0.26 - Defect fixes - Null pointers
+// version 1.0.27 - Fixed Hascontent issue
+// version 1.0.28/29 - Fixed NPE with requestFileName
+// version 1.0.30 - Added support for PUT method
+// version 1.0.30 - POC for properties validation
+
+group = "com.comcast.xsp"
+version = '1.0.31'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    baseName = rootProject.name
+    version = version
+}
+
+dependencies {
+
+
+    compile group: 'com.jayway.restassured', name: 'rest-assured', version: '2.4.1'
+    compile('junit:junit:4.12')
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+    compile group: 'org.yaml', name: 'snakeyaml', version: '1.8'
+    compile("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    
+    testCompile('junit:junit:4.12')
+    testCompile group: 'com.google.code.gson', name: 'gson', version: '2.3.1'
+    testCompile group: 'org.yaml', name: 'snakeyaml', version: '1.8'
+    compile group: 'org.json', name: 'json', version: '20090211'
+    
+}
+
+task sourcesJar ( type: Jar, dependsOn: classes ) {
+    classifier 'sources'
+    from sourceSets.main.allJava
+
+}
+assemble.finalizedBy(sourcesJar)
+install.dependsOn publishToMavenLocal
+
+repositories {
+    mavenLocal()
+}
+
+String publishingRepo = jar.version.endsWith('SNAPSHOT') ? 'libs-snapshot-local' : 'libs-release-local'
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"   //The base Artifactory URL if not overridden by the publisher/resolver
+    publish {
+        repository {
+            repoKey = "${publishingRepo}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-release'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+
+        }
+    }
+}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifactId "${jar.baseName}"
+            version project.version
+        }
+    }
+    repositories {
+        maven {
+            credentials {
+                username "${artifactory_user}"
+                password "${artifactory_password}"
+            }
+            url "${artifactory_contextUrl}/${publishingRepo}"
+        }
+    }
+}
+artifactoryPublish {
+    publications(publishing.publications.mavenJava)
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
