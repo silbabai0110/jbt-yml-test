@@ -6,7 +6,7 @@ buildscript {
     }
     repositories {
         mavenLocal()
-            jcenter()
+        jcenter()
     }
     dependencies {
     	classpath("org.springframework.boot:spring-boot-gradle-plugin:1.2.5.RELEASE")
@@ -86,22 +86,15 @@ publishing {
 }
 
 bintray {   
-    user = 'silbabai0110'
-    key = 'd11a823c58a0dda5ce9c3a0b561e9d8836f5b850'
+    user = "${bintray_user}"
+    key = "${bintray_key}"
 	publications = ['MyPublication']
     pkg {
         repo = 'falcons'
         name = 'com.falcons.assured:dist'
         userOrg = 'silbabai0110'
         licenses = ['Apache-2.0']
-		vcsUrl = 'https://github.com/silbabai0110/jbt-yml-test.git'
         publicDownloadNumbers = true
-//		version {
-//			name = 'YmlTest-Framework-2.0-Final'
-//			desc = 'YmlTest-Framework-2.0-Final'
-//			released  = new Date()
-//			vcsTag = '2.0.1'
-//		}
     }
 	
 }
