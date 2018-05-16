@@ -32,10 +32,10 @@ public abstract class BaseRestEndToEndTest {
 
 	Map<String, String> credCache;
 
-	public static final String PINGFEDERATE_QA = "https://websec-qa.cable.comcast.com";
+/*	public static final String PINGFEDERATE_QA = "https://websec-qa.cable.comcast.com";
 	public static final String PINGFEDERATE_INT = "https://websec-int.cable.comcast.com";
 	public static final String PINGFEDERATE_STG = "https://websec-stg.cable.comcast.com";
-	public static final String PINGFEDERATE_PROD = "https://websec.cable.comcast.com";
+	public static final String PINGFEDERATE_PROD = "https://websec.cable.comcast.com";*/
 
 	// Map<String, Object> mapYamlTestData;
 	// String testSuiteFileName;
@@ -68,7 +68,7 @@ public abstract class BaseRestEndToEndTest {
 		 * "Test requires testSuite FileName via -Dspring.test.suite=testSuite_QA.yml" ); } */
 
 		Yaml yaml = new Yaml();
-		FileInputStream fileInputStream = new FileInputStream("src/e2eTest/resources/" + "properties.yml");
+		FileInputStream fileInputStream = new FileInputStream("src/test/resources/" + "properties.yml");
 		Map<String, Map<String, String>> data = (Map<String, Map<String, String>>) yaml.load(fileInputStream);
 		if (!data.keySet().contains(environmentName)) {
 			throw new IllegalArgumentException("Unable to find specified environment named " + environmentName);
@@ -90,7 +90,7 @@ public abstract class BaseRestEndToEndTest {
 		this.testProperties = testProperties;
 	}
 
-	protected static Map<String, ?> getHeaders() {
+/*	protected static Map<String, ?> getHeaders() {
 		Map<String, String> headers = new HashMap<String, String>();
 
 		headers.put("sourceSystemId", "ss-id");
@@ -99,7 +99,7 @@ public abstract class BaseRestEndToEndTest {
 		headers.put("Authorization", "Bearer " + System.getProperty("comcast.esp.oauth.token"));
 
 		return headers;
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	protected byte[] readFileContent(final String filePath, JsonObject jsonObj) throws IOException {
@@ -127,7 +127,7 @@ public abstract class BaseRestEndToEndTest {
 		String scope = null;
 		String authToken = null;
 
-		if (getTestProperties().get("profile").contains("qa")) {
+/*		if (getTestProperties().get("profile").contains("qa")) {
 			pingFederateEndPoint = PINGFEDERATE_QA;
 		} else if (getTestProperties().get("profile").contains("int")) {
 			pingFederateEndPoint = PINGFEDERATE_INT;
@@ -135,7 +135,7 @@ public abstract class BaseRestEndToEndTest {
 			pingFederateEndPoint = PINGFEDERATE_STG;
 		} else if (getTestProperties().get("profile").contains("prd")) {
 			pingFederateEndPoint = PINGFEDERATE_PROD;
-		}
+		}*/
 
 		/* if (null != jsonObj.get("userId")) { userName = jsonObj.get("userId").getAsString(); } else { userName =
 		 * getTestProperties().get("userId"); } if (null != jsonObj.get("password")) { password =
@@ -145,6 +145,12 @@ public abstract class BaseRestEndToEndTest {
 			scope = jsonObj.get("scope").getAsString();
 		} else {
 			scope = getTestProperties().get("scope");
+		}
+		
+		if (null != jsonObj.get("authUrl")) {
+			pingFederateEndPoint = jsonObj.get("authUrl").getAsString();
+		} else {
+			pingFederateEndPoint = getTestProperties().get("authUrl");
 		}
 
 		RestAssured.baseURI = pingFederateEndPoint;

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
+//import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 import org.yaml.snakeyaml.Yaml;
@@ -51,7 +51,7 @@ public class ExecuteAndValidate extends BaseRestEndToEndTest {
 	private Integer intPassCount = 0;
 	private Integer intFailCount = 0;
 
-	@SuppressWarnings({ "unchecked", "null" })
+	@SuppressWarnings({ "unchecked" })
 	public ExecuteAndValidate() {
 		Yaml yamlTestSuite = new Yaml();
 		FileInputStream fileTestInputStream = null;
@@ -66,9 +66,9 @@ public class ExecuteAndValidate extends BaseRestEndToEndTest {
 			try {
 				setUp();
 				if (testSuiteFileName.contains("xml") || testSuiteFileName.contains("XML")) {
-					resourcesFldr = "src/e2eTest/resources/xml/";
+					resourcesFldr = "src/test/resources/xml/";
 				} else if (testSuiteFileName.contains("json") || testSuiteFileName.contains("JSON")) {
-					resourcesFldr = "src/e2eTest/resources/json/";
+					resourcesFldr = "src/test/resources/json/";
 				}
 				fileTestInputStream = new FileInputStream(resourcesFldr + testSuiteFileName);
 				setmapYamlTestData((Map<String, Object>) yamlTestSuite.load(fileTestInputStream));
@@ -825,7 +825,7 @@ public class ExecuteAndValidate extends BaseRestEndToEndTest {
 
 			iCheckHealthDataBank.put(testId, jsonObj);
 
-		} catch (JSONException e1) {
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
