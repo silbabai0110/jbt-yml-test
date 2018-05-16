@@ -92,7 +92,7 @@ bintray {
     pkg {
         repo = 'falcons'
         name = 'com.falcons.assured:dist'
-        userOrg = 'silbabai0110'
+        userOrg = "${bintray_user}"
         licenses = ['Apache-2.0']
         publicDownloadNumbers = true
     }
